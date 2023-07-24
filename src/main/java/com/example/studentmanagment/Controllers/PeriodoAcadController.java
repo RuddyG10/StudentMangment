@@ -77,7 +77,7 @@ public class PeriodoAcadController {
                 "SET FechaLimitePrematricula = ?," +
                 "SET FechaLimiteRetiro = ?" +
                 "SET FechaLimitePublicacion = ?"+
-                "WHERE Matricula = ?";
+                "WHERE CodPeriodoAcad = ?";
         jdbcTemplate.update(sql,periodoAcad.getDescripcion(), periodoAcad.getFechaInicio(), periodoAcad.getFechaFin(), periodoAcad.getFechaInicioClases(), periodoAcad.getFechaFinClases(), periodoAcad.getFechaLimitePago(), periodoAcad.getFechaLimitePrematricula(), periodoAcad.getFechaLimiteRetiro(), periodoAcad.getFechaLimitePublicacion(),periodoAcad.getCodPeriodoAcad());
     }
 }
