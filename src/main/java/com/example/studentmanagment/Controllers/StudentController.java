@@ -42,4 +42,11 @@ public class StudentController {
         String sql = "INSERT INTO Estudiante (Matricula, PrimerNombre, SegundoNombre, PrimerApellido, SegundoApellido, Direccion, Nacionalidad, Carrera, CatPago) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, estudiante.getMatricula(), estudiante.getPrimerNom(), estudiante.getSegNom(), estudiante.getPrimerApe(), estudiante.getSegApe(), estudiante.getDireccion(), estudiante.getNacionalidad(), estudiante.getCarrera(), estudiante.getCatPago());
     }
+
+    @DeleteMapping("/deleteStudent")
+    public void deleteStudent(@RequestParam("matricula") String matricula){
+        String sqlQuery = "DELETE FROM Estudiante WHERE matricula = ?";
+        Object[] params = {matricula};
+        jdbcTemplate.update(sqlQuery,matricula);
+    }
 }

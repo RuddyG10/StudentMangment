@@ -128,7 +128,6 @@
         <table id="tablaEst" class="w-auto p-3 table table-hover">
             <thead>
             <tr>
-                <th scope="col">#</th>
                 <th scope="col">Matricula</th>
                 <th scope="col">Primer Nombre</th>
                 <th scope="col">Segundo Nombre</th>
@@ -149,12 +148,11 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td></td>
             </tr>
 
             </tbody>
         </table>
-        <button class="btn btn-outline-danger" disabled>Eliminar</button>
+        <button id="eliminarEst" class="btn btn-outline-danger" disabled>Eliminar</button>
     </div>
     <!--  SCRIPTS  -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
@@ -167,11 +165,14 @@
     <script>
 
         //Cargar tabla de estudiantes
-        var tableEst = $("#tablaEst").DataTable();
+        var tableEst = $("#tablaEst").DataTable({
+            select: true
+        });
         $("#tablaEst").parents('div.dataTables_wrapper').first().hide();
-        getStudents();
-        var formEst = $("#formEstudiante");
 
+        var formEst = $("#formEstudiante");
+        var botonEliminarEst = document.querySelector("#eliminarEst");
+        var selectedRow = null;
         //Si presiona ingresar estudiante
         $("#inEstudiante").on('click',function(){
 
@@ -187,7 +188,7 @@
 
             //Cerrar todos los paneles
             clearPanel()
-
+            getStudents();
             //Abrir tabla
             $("#tablaContainer").removeClass("hide");
             $("#tablaEst").parents('div.dataTables_wrapper').first().show();
@@ -198,6 +199,44 @@
             guardarEstudiante();
         });
 
+        //Si se selecciona una fila de la tabla
+        $("#tablaEst tbody").on('click','tr',function (){
+
+
+            if($(this).hasClass('selected')){
+                $(this).removeClass('selected');
+                selectedRow = null;
+                botonEliminarEst.disabled = true;
+            }
+            else{
+                tableEst.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                botonEliminarEst.disabled= false;
+                selectedRow = tableEst.row(this).data();
+                console.log(selectedRow)
+            }
+
+        });
+
+        //Si se preciona eliminar
+        $("#eliminarEst").on('click',function (){
+
+            if (selectedRow !==null){
+                var matricula = selectedRow[0];
+                console.log(matricula)
+                // Mostrar ventana de confirmación
+                var confirmar = window.confirm('¿Estás seguro de que deseas eliminar a este estudiante?');
+
+                // Si el usuario hace clic en "Aceptar", proceder con la eliminación
+                if (confirmar) {
+                    eliminarEstudiante(matricula);
+                    selectedRow = null;
+                    botonEliminarEst.disabled = true;
+                    tableEst.ajax.reload();
+                }
+            }
+
+        });
         //Regresa a la principal
         $("#home").on('click',function (){
            clearPanel();
@@ -228,9 +267,8 @@
                     tableEst.clear();
 
                     // Agregar cada estudiante a la tabla
-                    data.forEach(function(student, index) {
+                    data.forEach(function(student) {
                         tableEst.row.add([
-                            index + 1, // Número de fila
                             student.matricula,
                             student.primerNom,
                             student.segNom,
@@ -283,15 +321,29 @@
                 type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify(estudiante),
-                success: function(data) {
+                success: function() {
                     // Éxito: el estudiante se ha guardado correctamente
                     alert("Estudiante guardado correctamente");
-                    location.reload();
+                    formEst[0].reset();
                     // Puedes realizar alguna otra acción después de guardar el estudiante, si es necesario.
                 },
                 error: function(xhr, status, error) {
                     console.error("Error al guardar el estudiante: " + error);
                 }
+            });
+        }
+
+        function eliminarEstudiante(matricula){
+            $.ajax({
+               url: 'student/deleteStudent?matricula='+matricula,
+               type: 'DELETE',
+               success: function (){
+                   alert("Estudiante eliminado exitosamente")
+                    getStudents();
+               } ,
+               error: function (){
+                   alert("Error, no se pudo eliminar el estudiante.")
+               }
             });
         }
     </script>
