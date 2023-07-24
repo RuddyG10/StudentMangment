@@ -49,4 +49,19 @@ public class StudentController {
         Object[] params = {matricula};
         jdbcTemplate.update(sqlQuery,matricula);
     }
+
+    @PostMapping("/updateStudent")
+    public void updateStudent(@RequestBody Estudiante estudiante){
+        String sql = "UPDATE Estudiante "+
+                        "SET PrimerNombre = ?," +
+                        "SET SegundoNombre = ?," +
+                        "SET PrimerApellido = ?," +
+                        "SET SegundoApellido =?," +
+                        "SET Direccion = ?," +
+                        "SET Nacionalidad = ?," +
+                        "SET Carrera = ?," +
+                        "SET CatPago = ?" +
+                    "WHERE Matricula = ?";
+        jdbcTemplate.update(sql, estudiante.getPrimerNom(), estudiante.getSegNom(), estudiante.getPrimerApe(), estudiante.getSegApe(), estudiante.getDireccion(), estudiante.getNacionalidad(), estudiante.getCarrera(), estudiante.getCatPago(), estudiante.getMatricula());
+    }
 }
