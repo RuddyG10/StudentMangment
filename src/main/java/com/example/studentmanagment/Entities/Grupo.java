@@ -1,6 +1,6 @@
 package com.example.studentmanagment.Entities;
 
-public class Grupo {
+public class Grupo extends Horario {
 
     private String codPeriodoAcad;
     private String codAsignatura;
