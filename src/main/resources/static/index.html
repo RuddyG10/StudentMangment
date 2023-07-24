@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th:="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>StudentManagmentSystem</title>
+
+<!--  Bootstrap  -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+<!--    Data Table-->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
+
+    <style>
+        .hide{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a id="brand" class="navbar-brand" href="#">Sistema Academico</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a id="home" class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Administrar Periodo Academico
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" type="button">Ingresar periodo</a>
+                        <a class="dropdown-item" href="#">Lista de periodos</a>
+                        <div class="dropdown-divider"></div>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Administrar Asignaturas
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" type="button">Ingresar Asignatura</a>
+                        <a class="dropdown-item" href="#">Lista de Asignaturas</a>
+                        <div class="dropdown-divider"></div>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Administrar Grupos
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" type="button">Ingresar Grupo</a>
+                        <a class="dropdown-item" href="#">Lista de Grupos</a>
+                        <div class="dropdown-divider"></div>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Administrar Estudiante
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a id="inEstudiante" class="dropdown-item" href="#" type="button">Ingresar Estudiante</a>
+                        <a class="dropdown-item" href="#" type="button" id="listEstButton">Lista de Estudiantes</a>
+                        <div class="dropdown-divider"></div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!--  Estudiante  -->
+
+    <form id="formEstudiante" class="hide">
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="nombre1Estudiante">Primer Nombre:</label>
+                <input type="text" class="form-control" id="nombre1Estudiante">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="nombre2Estudiante">Segundo Nombre:</label>
+                <input type="text" class="form-control" id="nombre2Estudiante">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="apellido1Estudiante">Primer Apellido:</label>
+                <input type="text" class="form-control" id="apellido1Estudiante">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="apellido2Estudiante">Segundo Apellido:</label>
+                <input type="text" class="form-control" id="apellido2Estudiante">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="direccion">Direccion</label>
+                <input type="text" class="form-control" id="direccion">
+            </div>
+            <div class="form-group col-md-2">
+                <label for="nacionalidad">Nacionalidad:</label>
+                <input type="text" class="form-control" id="nacionalidad">
+            </div>
+        </div>
+
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="matricula">Matricula:</label>
+                <input type="text" class="form-control" id="matricula" placeholder="xxxxxxxx">
+            </div>
+            <div class="form-group col-md-2">
+                <label for="carrera">Carrera:</label>
+                <input type="text" class="form-control" id="carrera" placeholder="Ej: 'ITT'">
+            </div>
+            <div class="form-group col-md-2">
+                <label for="catPago">Categoria de pago:</label>
+                <input type="text" class="form-control" id="catPago">
+            </div>
+
+
+        </div>
+
+        <button type="submit" class="btn btn-outline-success">Guardar</button>
+    </form>
+
+<!--  Tabla de estudiantes  -->
+
+    <div id="tablaContainer" class="hide">
+        <table id="tablaEst" class="w-auto p-3 table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Matricula</th>
+                <th scope="col">Primer Nombre</th>
+                <th scope="col">Segundo Nombre</th>
+                <th scope="col">Primer Apellido</th>
+                <th scope="col">Segundo Apellido</th>
+                <th scope="col">Nacionalidad</th>
+                <th scope="col">Direccion</th>
+                <th scope="col">Categoria de pago</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            </tbody>
+        </table>
+        <button class="btn btn-outline-danger" disabled>Eliminar</button>
+    </div>
+    <!--  SCRIPTS  -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+
+    <script>
+
+        //Cargar tabla de estudiantes
+        var tableEst = $("#tablaEst").DataTable();
+        $("#tablaEst").parents('div.dataTables_wrapper').first().hide();
+        getStudents();
+        var formEst = $("#formEstudiante");
+
+        //Si presiona ingresar estudiante
+        $("#inEstudiante").on('click',function(){
+
+            clearPanel()
+
+            $("#formEstudiante").removeClass("hide");
+        })
+
+        //Si presiona listar estudiantes
+
+
+        $("#listEstButton").on('click',function (){
+
+            //Cerrar todos los paneles
+            clearPanel()
+
+            //Abrir tabla
+            $("#tablaContainer").removeClass("hide");
+            $("#tablaEst").parents('div.dataTables_wrapper').first().show();
+        });
+
+        //Se sube el estudiante
+        formEst.submit(function (){
+            guardarEstudiante();
+        });
+
+        //Regresa a la principal
+        $("#home").on('click',function (){
+           clearPanel();
+        });
+        $("#brand").on('click',function (){
+            clearPanel();
+        });
+        function clearPanel(){
+            $("#tablaEst").parents('div.dataTables_wrapper').first().hide();
+            if (!$("#tablaContainer").hasClass("hide")){
+                $("#tablaContainer").addClass("hide")
+
+            }
+            if (!formEst.hasClass("hide")){
+                formEst.addClass("hide");
+            }
+        }
+
+        // Función para llenar la tabla con los datos de los estudiantes
+        function getStudents() {
+            $.ajax({
+                url: '/student/studentList',
+                type: 'GET',
+                success: function(data) {
+
+
+                    // Limpiar la tabla antes de agregar nuevos datos
+                    tableEst.clear();
+
+                    // Agregar cada estudiante a la tabla
+                    data.forEach(function(student, index) {
+                        tableEst.row.add([
+                            index + 1, // Número de fila
+                            student.matricula,
+                            student.primerNom,
+                            student.segNom,
+                            student.primerApe,
+                            student.segApe,
+                            student.nacionalidad,
+                            student.direccion,
+                            student.catPago
+                        ]).draw();
+                    });
+
+
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al obtener los estudiantes: ' + error);
+                }
+            });
+        }
+
+
+
+        // Función para enviar los datos del formulario al controlador mediante AJAX
+        function guardarEstudiante() {
+            // Obtener los valores del formulario
+            var matricula = $("#matricula").val();
+            var PrimerNom = $("#nombre1Estudiante").val();
+            var SegNom = $("#nombre2Estudiante").val();
+            var PrimerApe = $("#apellido1Estudiante").val();
+            var SegApe = $("#apellido2Estudiante").val();
+            var direccion = $("#direccion").val();
+            var nacionalidad = $("#nacionalidad").val();
+            var carrera = $("#carrera").val();
+            var catPago = $("#catPago").val();
+            // Objeto con los datos del estudiante
+            var estudiante = {
+                matricula: matricula,
+                primerNom: PrimerNom,
+                segNom: SegNom,
+                primerApe: PrimerApe,
+                segApe: SegApe,
+                direccion: direccion,
+                nacionalidad: nacionalidad,
+                carrera: carrera,
+                catPago: catPago
+            };
+
+            // Enviar los datos al controlador mediante AJAX
+            $.ajax({
+                url: "/student/saveStudent", // Ruta del controlador para guardar el estudiante
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(estudiante),
+                success: function(data) {
+                    // Éxito: el estudiante se ha guardado correctamente
+                    alert("Estudiante guardado correctamente");
+                    location.reload();
+                    // Puedes realizar alguna otra acción después de guardar el estudiante, si es necesario.
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error al guardar el estudiante: " + error);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
