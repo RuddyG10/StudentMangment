@@ -29,7 +29,7 @@ public class PeriodoAcadController {
             periodoAcad.setFechaFinClases(rs.getDate("FechaFinClases"));
             periodoAcad.setFechaLimitePago(rs.getDate("FechaLimitePago"));
             periodoAcad.setFechaLimitePrematricula(rs.getDate("FechaLimitePrematricula"));
-            periodoAcad.setFechaLimiteRetiro(rs.getDate("FechaLimiteRetro"));
+            periodoAcad.setFechaLimiteRetiro(rs.getDate("FechaLimiteRetiro"));
             periodoAcad.setFechaLimitePublicacion(rs.getDate("FechaLimitePublicacion"));
             return periodoAcad;
         });
