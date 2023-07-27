@@ -40,7 +40,7 @@ public class AsignaturaController {
                 "           ,[Nombre]\n" +
                 "           ,[Creditos]\n" +
                 "           ,[HorasTeoricas]\n" +
-                "           ,[HorasPracticas]\n" +
+                "           ,[HorasPracticas])\n" +
                 "VALUES (?,?,?,?,?)";
         Object[] params = {asignatura.getCodAsignatura(),asignatura.getNombre(),
                 asignatura.getCreditos(),asignatura.getHorasTeoricas(),asignatura.getHorasPracticas()};

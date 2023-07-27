@@ -32,8 +32,8 @@
                         Administrar Periodo Academico
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" type="button">Ingresar periodo</a>
-                        <a class="dropdown-item" href="#">Lista de periodos</a>
+                        <a id="ingresarPeriod" class="dropdown-item" type="button">Ingresar periodo</a>
+                        <a id="verTablaPeriod" class="dropdown-item" type="button">Lista de periodos</a>
                         <div class="dropdown-divider"></div>
                     </div>
                 </li>
@@ -42,8 +42,8 @@
                         Administrar Asignaturas
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" type="button">Ingresar Asignatura</a>
-                        <a class="dropdown-item" href="#">Lista de Asignaturas</a>
+                        <a id="ingresarAsig" class="dropdown-item" type="button">Ingresar Asignatura</a>
+                        <a id="verTablaAsig" class="dropdown-item" href="#">Lista de Asignaturas</a>
                         <div class="dropdown-divider"></div>
                     </div>
                 </li>
@@ -154,6 +154,159 @@
         </table>
         <button id="eliminarEst" class="btn btn-outline-danger" disabled>Eliminar</button>
     </div>
+
+    <!--    Periodos-->
+    <!--  Estudiante  -->
+
+    <form id="formPeriodo" class="hide">
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="codPeriodAcad">Codigo del periodo:</label>
+                <input type="text" class="form-control" id="codPeriodAcad" placeholder="Ej: '2022-2023/1'" required>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="descripcion">Descripcion:</label>
+                <textarea class="form-control" rows="5" id="descripcion"></textarea>
+            </div>
+
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="fechaInicio">Fecha de Inicio del Periodo:</label>
+                <input type="date" class="form-control" id="fechaInicio">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="fechaFin">Fecha Fin del Periodo:</label>
+                <input type="date" class="form-control" id="fechaFin">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="fechaInicioClases">Fecha de Inicio de Clases:</label>
+                <input type="date" class="form-control" id="fechaInicioClases">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="fechaFinClases">Fecha de Fin del Periodo:</label>
+                <input type="date" class="form-control" id="fechaFinClases">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="fechaLimitePago">Fecha Limite de Pago:</label>
+                <input type="date" class="form-control" id="fechaLimitePago">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="fechaLimitePrematricula">Fecha Limite de Prematricula:</label>
+                <input type="date" class="form-control" id="fechaLimitePrematricula">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="fechaLimiteRetiro">Fecha Limite de Retiro:</label>
+                <input type="date" class="form-control" id="fechaLimiteRetiro">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="fechaLimitePublicacion">Fecha Limite de Publicacion:</label>
+                <input type="date" class="form-control" id="fechaLimitePublicacion">
+            </div>
+
+        </div>
+
+        <button id="savePeriod" type="submit" class="btn btn-outline-success">Guardar</button>
+    </form>
+
+<!--  Tabla de periodos  -->
+
+    <div id="tablaContainerPeriod" class="hide">
+        <table id="tablaPeriod" class="w-auto p-3 table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Codigo del Periodo</th>
+                <th scope="col">Descripcion</th>
+                <th scope="col">Fecha inicio de periodo</th>
+                <th scope="col">Fecha fin de periodo</th>
+                <th scope="col">Fecha inicio de clases</th>
+                <th scope="col">Fecha fin de clases</th>
+                <th scope="col">Fecha lim. de pago</th>
+                <th scope="col">Fecha lim. de prematricula</th>
+                <th scope="col">Fecha lim. de retiro</th>
+                <th scope="col">Fecha lim. de publicacion</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            </tbody>
+        </table>
+        <button id="deletePeriod" class="btn btn-outline-danger" disabled>Eliminar</button>
+    </div>
+
+    <!--    ASsignaturas  -->
+
+    <form id="formAsig" class="hide">
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="codAsig">Codigo de la asignatura:</label>
+                <input type="text" class="form-control" id="codAsig" placeholder="Ej: 'ITT202 o 1ITT202'" required>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="nombreAsig">Nombre:</label>
+                <input type="text" class="form-control" rows="5" id="nombreAsig">
+            </div>
+
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="creditos">Cantidad de creditos:</label>
+                <input type="text" class="form-control" id="creditos">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="horasTeoricas">Horas teoricas:</label>
+                <input type="text" class="form-control" id="horasTeoricas">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="horasPracticas">Horas practicas:</label>
+                <input type="text" class="form-control" id="horasPracticas">
+            </div>
+
+        </div>
+
+        <button id="saveAsig" type="submit" class="btn btn-outline-success">Guardar</button>
+    </form>
+
+    <!--  Tabla de periodos  -->
+
+    <div id="tablaContainerAsig" class="hide">
+        <table id="tablaAsig" class="w-auto p-3 table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Codigo de la asignatura</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Cantidad de creditos</th>
+                <th scope="col">Horas teoricas</th>
+                <th scope="col">Horas practicas</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            </tbody>
+        </table>
+        <button id="deleteAsig" class="btn btn-outline-danger" disabled>Eliminar</button>
+    </div>
     <!--  SCRIPTS  -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 
@@ -162,190 +315,7 @@
 
     <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
 
-    <script>
-
-        //Cargar tabla de estudiantes
-        var tableEst = $("#tablaEst").DataTable({
-            select: true
-        });
-        $("#tablaEst").parents('div.dataTables_wrapper').first().hide();
-
-        var formEst = $("#formEstudiante");
-        var botonEliminarEst = document.querySelector("#eliminarEst");
-        var selectedRow = null;
-        //Si presiona ingresar estudiante
-        $("#inEstudiante").on('click',function(){
-
-            clearPanel()
-
-            $("#formEstudiante").removeClass("hide");
-        })
-
-        //Si presiona listar estudiantes
-
-
-        $("#listEstButton").on('click',function (){
-
-            //Cerrar todos los paneles
-            clearPanel()
-            getStudents();
-            //Abrir tabla
-            $("#tablaContainer").removeClass("hide");
-            $("#tablaEst").parents('div.dataTables_wrapper').first().show();
-        });
-
-        //Se sube el estudiante
-        formEst.submit(function (){
-            guardarEstudiante();
-        });
-
-        //Si se selecciona una fila de la tabla
-        $("#tablaEst tbody").on('click','tr',function (){
-
-
-            if($(this).hasClass('selected')){
-                $(this).removeClass('selected');
-                selectedRow = null;
-                botonEliminarEst.disabled = true;
-            }
-            else{
-                tableEst.$('tr.selected').removeClass('selected');
-                $(this).addClass('selected');
-                botonEliminarEst.disabled= false;
-                selectedRow = tableEst.row(this).data();
-                console.log(selectedRow)
-            }
-
-        });
-
-        //Si se preciona eliminar
-        $("#eliminarEst").on('click',function (){
-
-            if (selectedRow !==null){
-                var matricula = selectedRow[0];
-                console.log(matricula)
-                // Mostrar ventana de confirmación
-                var confirmar = window.confirm('¿Estás seguro de que deseas eliminar a este estudiante?');
-
-                // Si el usuario hace clic en "Aceptar", proceder con la eliminación
-                if (confirmar) {
-                    eliminarEstudiante(matricula);
-                    selectedRow = null;
-                    botonEliminarEst.disabled = true;
-                    tableEst.ajax.reload();
-                }
-            }
-
-        });
-        //Regresa a la principal
-        $("#home").on('click',function (){
-           clearPanel();
-        });
-        $("#brand").on('click',function (){
-            clearPanel();
-        });
-        function clearPanel(){
-            $("#tablaEst").parents('div.dataTables_wrapper').first().hide();
-            if (!$("#tablaContainer").hasClass("hide")){
-                $("#tablaContainer").addClass("hide")
-
-            }
-            if (!formEst.hasClass("hide")){
-                formEst.addClass("hide");
-            }
-        }
-
-        // Función para llenar la tabla con los datos de los estudiantes
-        function getStudents() {
-            $.ajax({
-                url: '/student/studentList',
-                type: 'GET',
-                success: function(data) {
-
-
-                    // Limpiar la tabla antes de agregar nuevos datos
-                    tableEst.clear();
-
-                    // Agregar cada estudiante a la tabla
-                    data.forEach(function(student) {
-                        tableEst.row.add([
-                            student.matricula,
-                            student.primerNom,
-                            student.segNom,
-                            student.primerApe,
-                            student.segApe,
-                            student.nacionalidad,
-                            student.direccion,
-                            student.catPago
-                        ]).draw();
-                    });
-
-
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error al obtener los estudiantes: ' + error);
-                }
-            });
-        }
-
-
-
-        // Función para enviar los datos del formulario al controlador mediante AJAX
-        function guardarEstudiante() {
-            // Obtener los valores del formulario
-            var matricula = $("#matricula").val();
-            var PrimerNom = $("#nombre1Estudiante").val();
-            var SegNom = $("#nombre2Estudiante").val();
-            var PrimerApe = $("#apellido1Estudiante").val();
-            var SegApe = $("#apellido2Estudiante").val();
-            var direccion = $("#direccion").val();
-            var nacionalidad = $("#nacionalidad").val();
-            var carrera = $("#carrera").val();
-            var catPago = $("#catPago").val();
-            // Objeto con los datos del estudiante
-            var estudiante = {
-                matricula: matricula,
-                primerNom: PrimerNom,
-                segNom: SegNom,
-                primerApe: PrimerApe,
-                segApe: SegApe,
-                direccion: direccion,
-                nacionalidad: nacionalidad,
-                carrera: carrera,
-                catPago: catPago
-            };
-
-            // Enviar los datos al controlador mediante AJAX
-            $.ajax({
-                url: "/student/saveStudent", // Ruta del controlador para guardar el estudiante
-                type: "POST",
-                contentType: "application/json",
-                data: JSON.stringify(estudiante),
-                success: function() {
-                    // Éxito: el estudiante se ha guardado correctamente
-                    alert("Estudiante guardado correctamente");
-                    formEst[0].reset();
-                    // Puedes realizar alguna otra acción después de guardar el estudiante, si es necesario.
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error al guardar el estudiante: " + error);
-                }
-            });
-        }
-
-        function eliminarEstudiante(matricula){
-            $.ajax({
-               url: 'student/deleteStudent?matricula='+matricula,
-               type: 'DELETE',
-               success: function (){
-                   alert("Estudiante eliminado exitosamente")
-                    getStudents();
-               } ,
-               error: function (){
-                   alert("Error, no se pudo eliminar el estudiante.")
-               }
-            });
-        }
+    <script src="index.js">
     </script>
 </body>
 </html>
