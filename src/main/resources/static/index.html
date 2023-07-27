@@ -42,8 +42,8 @@
                         Administrar Asignaturas
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" type="button">Ingresar Asignatura</a>
-                        <a class="dropdown-item" href="#">Lista de Asignaturas</a>
+                        <a id="ingresarAsig" class="dropdown-item" type="button">Ingresar Asignatura</a>
+                        <a id="verTablaAsig" class="dropdown-item" href="#">Lista de Asignaturas</a>
                         <div class="dropdown-divider"></div>
                     </div>
                 </li>
@@ -245,6 +245,67 @@
             </tbody>
         </table>
         <button id="deletePeriod" class="btn btn-outline-danger" disabled>Eliminar</button>
+    </div>
+
+    <!--    ASsignaturas  -->
+
+    <form id="formAsig" class="hide">
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="codAsig">Codigo de la asignatura:</label>
+                <input type="text" class="form-control" id="codAsig" placeholder="Ej: 'ITT202 o 1ITT202'" required>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="nombreAsig">Nombre:</label>
+                <input type="text" class="form-control" rows="5" id="nombreAsig">
+            </div>
+
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="creditos">Cantidad de creditos:</label>
+                <input type="text" class="form-control" id="creditos">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="horasTeoricas">Horas teoricas:</label>
+                <input type="text" class="form-control" id="horasTeoricas">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="horasPracticas">Horas practicas:</label>
+                <input type="text" class="form-control" id="horasPracticas">
+            </div>
+
+        </div>
+
+        <button id="saveAsig" type="submit" class="btn btn-outline-success">Guardar</button>
+    </form>
+
+    <!--  Tabla de periodos  -->
+
+    <div id="tablaContainerAsig" class="hide">
+        <table id="tablaAsig" class="w-auto p-3 table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Codigo de la asignatura</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Cantidad de creditos</th>
+                <th scope="col">Horas teoricas</th>
+                <th scope="col">Horas practicas</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            </tbody>
+        </table>
+        <button id="deleteAsig" class="btn btn-outline-danger" disabled>Eliminar</button>
     </div>
     <!--  SCRIPTS  -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>

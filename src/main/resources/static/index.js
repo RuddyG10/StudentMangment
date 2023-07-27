@@ -1,4 +1,69 @@
 /**
+ * Asignatura
+ */
+var formAsig = $("#formAsig");
+var tablaAsig = $("#tablaAsig").DataTable({
+    select: true
+});
+var btnDeleteAsig = document.querySelector("#deleteAsig");
+
+$("#tablaAsig").parents('div.dataTables_wrapper').first().hide();
+
+//Ver formulario
+$("#ingresarAsig").on('click',function (){
+    clearPanel();
+    formAsig.removeClass("hide");
+});
+
+//Ver tabla
+$("#verTablaAsig").on('click',function (){
+   clearPanel();
+   getAsig()
+   $("#tablaContainerAsig").removeClass("hide");
+    $("#tablaAsig").parents('div.dataTables_wrapper').first().show();
+});
+
+//Subir formulario de asignaturas
+formAsig.submit(function (){
+    saveAsig();
+});
+
+//Si se selecciona una fila de la tabla
+$("#tablaAsig tbody").on('click','tr',function (){
+
+
+    if($(this).hasClass('selected')){
+        $(this).removeClass('selected');
+        selectedRow = null;
+        btnDeleteAsig.disabled = true;
+    }
+    else{
+        tablaAsig.$('tr.selected').removeClass('selected');
+        $(this).addClass('selected');
+        btnDeleteAsig.disabled= false;
+        selectedRow = tablaAsig.row(this).data();
+        console.log(selectedRow)
+    }
+
+});
+
+//eliminar asignatura
+$("#deleteAsig").on('click',function (){
+    if (selectedRow !==null){
+        var codAsig = selectedRow[0];
+        // Mostrar ventana de confirmación
+        var confirmar = window.confirm('¿Estás seguro de que deseas eliminar a esta Asignatura?');
+
+        // Si el usuario hace clic en "Aceptar", proceder con la eliminación
+        if (confirmar) {
+            deleteAsig(codAsig);
+            selectedRow = null;
+            btnDeleteAsig.disabled = true;
+            tablaAsig.ajax.reload();
+        }
+    }
+});
+/**
  * Periodos
  *
  */
@@ -147,9 +212,9 @@ $("#brand").on('click',function (){
 function clearPanel(){
     $("#tablaEst").parents('div.dataTables_wrapper').first().hide();
     $("#tablaPeriod").parents('div.dataTables_wrapper').first().hide();
+    $("#tablaAsig").parents('div.dataTables_wrapper').first().hide();
     if (!$("#tablaContainer").hasClass("hide")){
         $("#tablaContainer").addClass("hide");
-
     }
     if (!formEst.hasClass("hide")){
         formEst.addClass("hide");
@@ -157,9 +222,14 @@ function clearPanel(){
     if (!formPeriodo.hasClass("hide")){
         formPeriodo.addClass("hide");
     }
+    if (!formAsig.hasClass("hide")){
+        formAsig.addClass("hide");
+    }
     if (!$("#tablaContainerPeriod").hasClass("hide")){
         $("#tablaContainerPeriod").addClass("hide");
-
+    }
+    if (!$("#tablaContainerAsig").hasClass("hide")){
+        $("#tablaContainerAsig").addClass("hide")
     }
 }
 
@@ -345,6 +415,85 @@ function eliminarPeriodo(codPeriod){
         } ,
         error: function (){
             alert("Error, no se pudo eliminar el periodo.")
+        }
+    });
+}
+
+/**
+ * Asignatura funciones
+ */
+
+function getAsig(){
+    $.ajax({
+        url:'asignatura/listAsig',
+        type:'GET',
+        success: function (data){
+            // Limpiar la tabla antes de agregar nuevos datos
+            tablaAsig.clear();
+
+            // Agregar cada estudiante a la tabla
+            data.forEach(function(asignatura) {
+                tablaAsig.row.add([
+                    asignatura.codAsignatura,
+                    asignatura.nombre,
+                    asignatura.creditos,
+                    asignatura.horasTeoricas,
+                    asignatura.horasPracticas
+                ]).draw();
+            });
+        },
+        error: function (error){
+            console.log("Algo salio mal: "+error);
+        }
+    });
+}
+
+//Guardar asignatura
+function saveAsig(){
+    // Obtener los valores del formulario
+    var codAsig = $("#codAsig").val();
+    var nombre = $("#nombreAsig").val();
+    var creditos = $("#creditos").val();
+    var horasTeo = $("#horasTeoricas").val();
+    var horasPrac= $("#horasPracticas").val();
+
+    // Objeto con los datos de asignatura
+    var asignatura = {
+        codAsignatura: codAsig,
+        nombre: nombre,
+        creditos: creditos,
+        horasTeoricas: horasTeo,
+        horasPracticas: horasPrac
+    };
+
+    // Enviar los datos al controlador mediante AJAX
+    $.ajax({
+        url: "asignatura/saveAsig", // Ruta del controlador para guardar el estudiante
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(asignatura),
+        success: function() {
+            // Éxito: el estudiante se ha guardado correctamente
+            alert("Asignatura guardada correctamente");
+            formAsig[0].reset();
+        },
+        error: function(xhr, status, error) {
+            console.error("Error al guardar la Asignatura: " + error);
+        }
+    });
+}
+
+//Eliminar asignatura
+function deleteAsig(codAsig){
+    $.ajax({
+        url: 'asignatura/deleteAsig?codAsignatura='+codAsig,
+        type: 'DELETE',
+        success: function (){
+            alert("Asignatura eliminada exitosamente")
+            getAsig();
+        } ,
+        error: function (){
+            alert("Error, no se pudo eliminar la Asignatura.")
         }
     });
 }
