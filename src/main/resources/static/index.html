@@ -14,9 +14,13 @@
         .hide{
             display: none;
         }
+
     </style>
 </head>
 <body>
+<!-- Modal -->
+
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a id="brand" class="navbar-brand" href="#">Sistema Academico</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,8 +56,8 @@
                         Administrar Grupos
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" type="button">Ingresar Grupo</a>
-                        <a class="dropdown-item" href="#">Lista de Grupos</a>
+                        <a id="insertGrup" class="dropdown-item" type="button">Ingresar Grupo</a>
+                        <a id="listaGrup" class="dropdown-item">Lista de Grupos</a>
                         <div class="dropdown-divider"></div>
                     </div>
                 </li>
@@ -281,7 +285,7 @@
         <button id="saveAsig" type="submit" class="btn btn-outline-success">Guardar</button>
     </form>
 
-    <!--  Tabla de periodos  -->
+    <!--  Tabla de asignaturas  -->
 
     <div id="tablaContainerAsig" class="hide">
         <table id="tablaAsig" class="w-auto p-3 table table-hover">
@@ -307,6 +311,200 @@
         </table>
         <button id="deleteAsig" class="btn btn-outline-danger" disabled>Eliminar</button>
     </div>
+
+
+    <!--    Grupos  -->
+
+    <form id="formGrup" class="hide">
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="codPeriodGrup">Codigo del periodo:</label>
+                <input type="text" class="form-control" id="codPeriodGrup" placeholder="Ej: '2022-2023/3'" required>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="codAsigGrup">Codigo de asignatura:</label>
+                <input type="text" class="form-control" rows="5" id="codAsigGrup" required>
+            </div>
+
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="numGrup">Numero de grupo:</label>
+                <input type="text" class="form-control" id="numGrup" placeholder="EJ: 001" required>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="cupo">Cupo:</label>
+                <input type="number" class="form-control" id="cupo">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="horario">Escriba el horario en formato corto:</label>
+                <input type="text" class="form-control" id="horario" placeholder="EJ: LunMie/10-12">
+            </div>
+
+        </div>
+        <div id="formHorario" class="hide">
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="numGrup">Dia (Digite el numero del dia segun la semana):</label>
+                    <input type="number" class="form-control" id="dia" placeholder="EJ: Lunes = 1, Martes = 2, etc." required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="fechaInGrup">Fecha de inicio:</label>
+                    <input type="date" class="form-control" id="fechaInGrup">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="fechaFinGrup">Fecha de fin:</label>
+                    <input type="date" class="form-control" id="fechaFinGrup">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="horaInicio">Hora de inicio:</label>
+                    <input type="time" class="form-control" id="horaInicio">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="horaFin">Hora de fin:</label>
+                    <input type="time" class="form-control" id="horaFin">
+                </div>
+
+            </div>
+            <button id="saveGrup" type="button" class="btn btn-outline-success mb-2">Guardar</button>
+
+        </div>
+        <button id="continue" type="button" class="btn btn-outline-primary">Siguiente</button>
+        <button id="saveChangesGrup" type="button" class="btn btn-outline-success hide">Guardar Cambios</button>
+
+    </form>
+
+    <!--  Tabla de grupos  -->
+
+    <div id="tablaContainerGrupo" class="hide">
+
+        <table id="tablaGrupo" class="w-auto p-3 table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Codigo del periodo</th>
+                <th scope="col">Codigo de la asignatura</th>
+                <th scope="col">Numero del grupo</th>
+                <th scope="col">Cupo</th>
+                <th scope="col">Horario</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            </tbody>
+        </table>
+        <button id="deleteGrupo" class="btn btn-outline-danger" disabled>Eliminar</button>
+        <!-- Button trigger modal -->
+        <button id="modalGrup" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHorario" disabled>
+            Ver Horario
+        </button>
+        <button id="btnAddHorario" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHorario" disabled>
+            Añadir Horario
+        </button>
+        <button id="btneditGrupo" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHorario" disabled>
+            Editar
+        </button>
+
+    </div>
+
+
+    <div id="tablaContainerHorario" class="hide">
+        <table id="tablaHorario" class="w-auto p-3 table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">CodigoPeriodo</th>
+                <th scope="col">Codigo asignatura</th>
+                <th scope="col">Numero del grupo</th>
+                <th scope="col">Dia</th>
+                <th scope="col">Fecha Inicial</th>
+                <th scope="col">Fecha Final</th>
+                <th scope="col">Hora Inicio</th>
+                <th scope="col">Hora Fin</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            </tbody>
+        </table>
+        <div class="col-auto">
+            <button id="btnCerrarHorario" type="button" class="btn btn-secondary">Cerrar</button>
+            <button id="btnEditarHorario" type="button" class="btn btn-primary" disabled>Editar</button>
+            <button id="btnEliminarHorario" type="button" class="btn btn-danger" disabled>Eliminar</button>
+        </div>
+    </div>
+
+
+    <form id="formSaveHorario" class="hide">
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="codPeriodH">Codigo del periodo:</label>
+                <input type="text" class="form-control" id="codPeriodH" disabled required>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="codAsigH">Codigo de asignatura:</label>
+                <input type="text" class="form-control" rows="5" id="codAsigH" disabled required>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="numGrupH">Numero de grupo:</label>
+                <input type="text" class="form-control" id="numGrupH" disabled required>
+            </div>
+
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="diaH">Dia (Digite el numero del dia segun la semana):</label>
+                <input type="number" class="form-control" id="diaH" placeholder="EJ: Lunes = 1, Martes = 2, etc." required>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="fechaInGrupH">Fecha de inicio:</label>
+                <input type="date" class="form-control" id="fechaInGrupH">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="fechaFinGrupH">Fecha de fin:</label>
+                <input type="date" class="form-control" id="fechaFinGrupH">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="horaInicioH">Hora de inicio:</label>
+                <input type="time" class="form-control" id="horaInicioH">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="horaFinH">Hora de fin:</label>
+                <input type="time" class="form-control" id="horaFinH">
+            </div>
+
+        </div>
+        <div class="col-auto">
+            <button id="cancelHorario" type="button" class="btn btn-outline-secondary mb-2">Cancelar</button>
+
+            <button id="saveHorario" type="button" class="btn btn-outline-success mb-2">Guardar Horario</button>
+
+        </div>
+
+    </form>
+
+
+
+
+
+
+
     <!--  SCRIPTS  -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 
@@ -314,8 +512,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
     <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
-
-    <script src="index.js">
-    </script>
+    <script src="index.js"></script>
 </body>
 </html>

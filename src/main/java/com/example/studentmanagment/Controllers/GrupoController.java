@@ -31,30 +31,33 @@ public class GrupoController {
 
         return ResponseEntity.ok(listaGrupo);
     }
+
+
     @GetMapping("/groupSchedule")
-    public ResponseEntity<Grupo> groupSchedule(@RequestBody Grupo grupo){
-        Grupo grupoHorario = new Grupo();
+    public ResponseEntity<List<Grupo>> groupSchedule(@RequestParam("codPeriodoAcad") String codPeriodoAcad,
+                                               @RequestParam("codAsignatura") String codAsignatura,
+                                               @RequestParam("numGrupo") String numGrupo){
         String sql = "SELECT * FROM GrupoHorario " +
-                "WHERE CodPeriodoAcad = ? AND" +
-                "CodAsignatura = ? AND" +
+                "WHERE CodPeriodoAcad = ? AND " +
+                "CodAsignatura = ? AND " +
                 "NumGrupo = ?";
-        Object[] params = {grupo.getCodPeriodoAcad(),grupo.getCodAsignatura(),grupo.getNumGrupo()};
-        grupoHorario = jdbcTemplate.queryForObject(sql,params,(rs, rowNum) -> {
+        Object[] params = {codPeriodoAcad,codAsignatura,numGrupo};
+        List<Grupo> grupoHorario = jdbcTemplate.query(sql,params,(rs, rowNum) -> {
             Grupo grupo1 = new Grupo();
-            grupo1.setCodPeriodoAcad(rs.getString("CodPeriodoAcad"));
-            grupo1.setCodAsignatura(rs.getString("CodAsignatura"));
-            grupo1.setNumGrupo(rs.getString("NumGrupo"));
-            grupo1.setCupoGrupo(rs.getInt("CupoGrupo"));
-            grupo1.setHorario(rs.getString("Horario"));
+            grupo1.setCodPeriodoAcad(codPeriodoAcad);
+            grupo1.setCodAsignatura(codAsignatura);
+            grupo1.setNumGrupo(numGrupo);
             grupo1.setDia(rs.getInt("Dia"));
-            grupo1.setFechaInicio(rs.getDate("FechaInicio"));
-            grupo1.setFechaFin(rs.getDate("FechaFin"));
+            grupo1.setFechaInicio(rs.getDate("FechaInicial"));
+            grupo1.setFechaFin(rs.getDate("FechaFinal"));
+            grupo1.setHoraInicio(rs.getString("HoraInicio"));
+            grupo1.setHoraFin(rs.getString("HoraFin"));
 
             return grupo1;
         });
-
         if (grupoHorario != null){
             return ResponseEntity.ok(grupoHorario);
+
         }
         else {
             return ResponseEntity.notFound().build();
@@ -72,10 +75,11 @@ public class GrupoController {
 
     @PostMapping("/saveSchedule")
     public void saveSchedule(@RequestBody Grupo grupo){
-        String sql = "INSERT GrupoHorario (CodPeriodoAcad, CodAsignatura, NumGrupo, CupoGrupo, Horario,Dia,FechaInicio,FechaFin) " +
-                "VALUES (?,?,?,?,?,?,?,?)";
+        String sql = "INSERT GrupoHorario (CodPeriodoAcad, CodAsignatura, NumGrupo,Dia,FechaInicial,FechaFinal,HoraInicio,HoraFin) " +
+                "VALUES (?,?,?,?,?,?,?, ?)";
+
         Object[] params = {grupo.getCodPeriodoAcad(),grupo.getCodAsignatura(),grupo.getNumGrupo(),
-                grupo.getCupoGrupo(),grupo.getHorario(),grupo.getDia(),grupo.getFechaInicio(),grupo.getFechaFin()};
+                grupo.getDia(),grupo.getFechaInicio(),grupo.getFechaFin(),grupo.getHoraInicio(),grupo.getHoraFin()};
         jdbcTemplate.update(sql,params);
     }
 
@@ -85,29 +89,29 @@ public class GrupoController {
                 grupo.getCodPeriodoAcad(), grupo.getCodAsignatura()};
         //Se actualiza primer el grupo como tal
         String sql = "Update Grupo " +
-                "SET CupoGrupo = ?"+
-                "SET Horario = ?" +
+                "SET CupoGrupo = ?, "+
+                " Horario = ? " +
                 "WHERE NumGrupo = ? AND CodPeriodoAcad = ? AND CodAsignatura = ?";
         jdbcTemplate.update(sql,params);
 
-        //Revisar si el grupo tiene un horario para que sea actualizado
-        Grupo grupoHorario = groupSchedule(grupo).getBody();
-        if (grupoHorario!= null){
-            updateSchedule(grupo);
-        }
+//        //Revisar si el grupo tiene un horario para que sea actualizado
+//        List<Grupo> grupoHorario = groupSchedule(grupo.getCodPeriodoAcad(),grupo.getCodAsignatura(),grupo.getNumGrupo()).getBody();
+//        if (!grupoHorario.isEmpty()){
+//            updateSchedule(grupo);
+//        }
     }
 
     @PostMapping("/updateSchedule")
     public void updateSchedule(@RequestBody Grupo grupo){
         String sql = "Update GrupoHorario " +
-                "SET CupoGrupo = ?"+
-                "SET Horario = ?," +
-                "SET Dia = ?," +
-                "SET FechaInicio = ?," +
-                "SET FechaFin = ?" +
+                " SET Dia = ?, " +
+                " FechaInicial = ?, " +
+                " FechaFinal = ?, " +
+                " HoraInicio = ?, " +
+                "HoraFin= ? " +
                 "WHERE NumGrupo = ? AND CodPeriodoAcad = ? AND CodAsignatura = ?";
 
-        Object[] params = {grupo.getCupoGrupo(), grupo.getHorario(),grupo.getDia(),grupo.getFechaInicio(),grupo.getFechaFin(),grupo.getNumGrupo(),
+        Object[] params = {grupo.getDia(),grupo.getFechaInicio(),grupo.getFechaFin(),grupo.getHoraInicio(),grupo.getHoraFin(),grupo.getNumGrupo(),
                 grupo.getCodPeriodoAcad(), grupo.getCodAsignatura()};
 
         jdbcTemplate.update(sql,params);
@@ -125,6 +129,17 @@ public class GrupoController {
         String sqlGrupo = "DELETE Grupo WHERE NumGrupo = ? AND CodPeriodoAcad = ? AND CodAsignatura = ?";
 
         jdbcTemplate.update(sqlGrupo,params);
+    }
+
+    @DeleteMapping("/deleteSchedule")
+    public void deleteSchedule(@RequestParam("NumGrupo") String numGrupo,@RequestParam("CodPeriodoAcad") String codPeriodoAcad,
+                            @RequestParam("CodAsignatura") String codAsignatura){
+
+        //Primero eliminar el horario
+        String sql = "DELETE GrupoHorario WHERE NumGrupo = ? AND CodPeriodoAcad = ? AND CodAsignatura = ?";
+        Object[] params = {numGrupo,codPeriodoAcad,codAsignatura};
+        jdbcTemplate.update(sql,params);
+
     }
 
 }
