@@ -1,4 +1,47 @@
 /**
+ * Eliminar inscripcion
+ */
+
+/**
+ * Ver horario de estudiante
+ */
+$("#btnHorarioEst").on('click',function (){
+   $("#matriculaHorario").val(selectedRow[0]);
+   clearPanel();
+   $("#horarioContainer").removeClass("hide");
+});
+
+
+/**
+ * Horario de clases
+ */
+var buscarHorario = $("#horarioForm");
+var tableSchedule = $("#horarioClases");
+
+//abrir horario
+$("#showHorario").on('click', function (){
+   clearPanel();
+   buscarHorario[0].reset();
+   $("#horarioContainer").removeClass("hide");
+});
+
+//Presionar buscar
+$("#buscarHorario").on('click',function (){
+   if($("#periodoHorario").val()!='' && $("#matriculaHorario").val() !=''){
+       var matricula = $("#matriculaHorario").val();
+       var periodo = $("#periodoHorario").val();
+
+       findSchedule(periodo,matricula);
+   }
+   else {
+       alert("No puede haber campos vacios.")
+   }
+});
+
+
+
+
+/**
  * Grupo y horarios
  */
 //Variables
@@ -25,6 +68,7 @@ var formSaveHorario = $("#formSaveHorario");
 //ver form grup
 $("#insertGrup").on('click',function (){
    clearPanel();
+   formGrup[0].reset();
    formGrup.removeClass("hide");
 });
 
@@ -84,28 +128,50 @@ $("#tablaGrupo tbody").on('click','tr',function (){
         btnAddHorario.disabled = false;
         btnEdiGrup.disabled = false;
         selectedRow = tablaGrup.row(this).data();
-
+        if (!formInscript.hasClass("hide")){
+            $("#codPeriodInscrip").val(selectedRow[0]);
+            $("#codAsigInscript").val(selectedRow[1]);
+            $("#codGrupInscript").val(selectedRow[2]);
+        }
         console.log(selectedRow)
     }
 
 });
+var matricula = null;
 //Eliminar grupo
 $("#deleteGrupo").on('click',function (){
     if (selectedRow !==null){
         var codPeriod = selectedRow[0];
         var codAsig = selectedRow[1];
         var numGrup = selectedRow[2];
-        // Mostrar ventana de confirmación
-        var confirmar = window.confirm('¿Estás seguro de que deseas eliminar a esta Asignatura?');
+        if ($("#deleteGrupo").text() =="Eliminar Inscripcion"){
+            // Mostrar ventana de confirmación
+            var confirmar = window.confirm('¿Estás seguro de que deseas eliminar a esta Inscripcion?');
 
-        // Si el usuario hace clic en "Aceptar", proceder con la eliminación
-        if (confirmar) {
-            eliminarGrup(codPeriod,codAsig,numGrup);
-            selectedRow = null;
-            deleteGrup.disabled = true;
-            horario.disabled = true;
-            tablaGrup.ajax.reload();
+            // Si el usuario hace clic en "Aceptar", proceder con la eliminación
+            if (confirmar) {
+                deleteInscrip(codPeriod,codAsig,numGrup,matricula);
+                selectedRow = null;
+                clearPanel();
+                deleteGrup.disabled = true;
+                horario.disabled = true;
+                //tablaGrup.ajax.reload();
+            }
         }
+        else {
+            // Mostrar ventana de confirmación
+            var confirmar = window.confirm('¿Estás seguro de que deseas eliminar este grupo?');
+
+            // Si el usuario hace clic en "Aceptar", proceder con la eliminación
+            if (confirmar) {
+                eliminarGrup(codPeriod,codAsig,numGrup);
+                selectedRow = null;
+                deleteGrup.disabled = true;
+                horario.disabled = true;
+                //tablaGrup.ajax.reload();
+            }
+        }
+
     }
 });
 
@@ -116,9 +182,9 @@ $("#modalGrup").on('click',function (){
         var codPeriod = selectedRow[0];
         var codAsig = selectedRow[1];
         var numGrup = selectedRow[2];
-
+        tablaHorario.clear().draw();
         // Si el usuario hace clic en "Aceptar", proceder con la eliminación
-        getHorario(selectedRow)
+        getHorario(codPeriod,codAsig,numGrup)
 
         selectedRow = null;
         deleteGrup.disabled = true;
@@ -174,7 +240,7 @@ $("#btnEliminarHorario").on('click',function (){
             selectedRow = null;
             btnDeleteHorario.disabled = true;
             btnEditHorario.disabled = true;
-            tablaHorario.ajax.reload();
+            //tablaHorario.ajax.reload();
         }
     }
 });
@@ -189,6 +255,7 @@ $("#btnEditarHorario").on('click',function (){
 });
 //Editar grupo
 $("#btneditGrupo").on('click',function (){
+
     $("#codPeriodGrup").val(selectedRow[0]);
     $("#codAsigGrup").val(selectedRow[1]);
     $("#numGrup").val(selectedRow[2]);
@@ -209,6 +276,7 @@ $("#saveChangesGrup").on('click',function (){
 
 //Añadir horario
 $("#btnAddHorario").on('click',function (){
+
     $("#codPeriodH").val(selectedRow[0]);
     $("#codAsigH").val(selectedRow[1]);
     $("#numGrupH").val(selectedRow[2]);
@@ -240,12 +308,14 @@ var tablaAsig = $("#tablaAsig").DataTable({
     select: true
 });
 var btnDeleteAsig = document.querySelector("#deleteAsig");
+var btnEditAsig = $("#btnEditAsig");
 
 $("#tablaAsig").parents('div.dataTables_wrapper').first().hide();
 
 //Ver formulario
 $("#ingresarAsig").on('click',function (){
     clearPanel();
+    formAsig[0].reset();
     formAsig.removeClass("hide");
 });
 
@@ -258,9 +328,24 @@ $("#verTablaAsig").on('click',function (){
 });
 
 //Subir formulario de asignaturas
-formAsig.submit(function (){
-    saveAsig();
-});
+$("#saveAsig").on('click',function (){
+    if (        $("#nombreAsig").val()!='' && $("#creditos").val()!='' && $("#horasTeoricas").val()!='' && $("#horasPracticas").val()!=''
+    ){
+        if ($("#saveAsig").text() == 'Actualizar'){
+            updateAsig()
+        }
+        else{
+            saveAsig();
+        }
+
+    }
+    else{
+
+        alert("Aun hay campos vacios.")
+    }
+
+})
+
 
 //Si se selecciona una fila de la tabla
 $("#tablaAsig tbody").on('click','tr',function (){
@@ -270,11 +355,14 @@ $("#tablaAsig tbody").on('click','tr',function (){
         $(this).removeClass('selected');
         selectedRow = null;
         btnDeleteAsig.disabled = true;
+        btnEditAsig.prop('disabled',true);
     }
     else{
         tablaAsig.$('tr.selected').removeClass('selected');
         $(this).addClass('selected');
         btnDeleteAsig.disabled= false;
+        btnEditAsig.prop('disabled',false);
+
         selectedRow = tablaAsig.row(this).data();
         console.log(selectedRow)
     }
@@ -293,9 +381,24 @@ $("#deleteAsig").on('click',function (){
             deleteAsig(codAsig);
             selectedRow = null;
             btnDeleteAsig.disabled = true;
-            tablaAsig.ajax.reload();
+            //tablaAsig.ajax.reload();
         }
     }
+});
+//actualizar asignatura
+$("#btnEditAsig").on('click',function (){
+    $("#tablaContainerAsig").addClass("hide");
+    $("#tablaAsig").parents('div.dataTables_wrapper').first().hide();
+    $("#codAsig").prop('disabled',true);
+    $("#codAsig").val(selectedRow[0]);
+    $("#nombreAsig").val(selectedRow[1]);
+    $("#creditos").val(selectedRow[2]);
+    $("#horasTeoricas").val(selectedRow[3]);
+    $("#horasPracticas").val(selectedRow[4]);
+    clearPanel();
+    $("#saveAsig").text("Actualizar");
+
+    formAsig.removeClass("hide")
 });
 /**
  * Periodos
@@ -311,6 +414,7 @@ $("#tablaPeriod").parents('div.dataTables_wrapper').first().hide();
 
 $("#ingresarPeriod").on('click',function (){
    clearPanel();
+   formPeriodo[0].reset();
    formPeriodo.removeClass("hide");
 });
 
@@ -322,9 +426,22 @@ $("#verTablaPeriod").on('click',function (){
 });
 
 //Guardar periodo
-formPeriodo.submit( function (){
-   savePeriod();
+$("#savePeriod").on('click',function (){
+   if ($("#codPeriodAcad").val() != ''){
+       if ($("#savePeriod").text() == "Actualizar"){
+           updatePeriodo()
+       }else {
+           savePeriod()
+       }
+
+   }
 });
+
+
+/**
+ * Estudiantes
+ * @type {*|jQuery}
+ */
 //Cargar tabla de estudiantes
 var tableEst = $("#tablaEst").DataTable({
     select: true
@@ -338,7 +455,7 @@ var selectedRow = null;
 $("#inEstudiante").on('click',function(){
 
     clearPanel()
-
+    $("#formEstudiante")[0].reset();
     $("#formEstudiante").removeClass("hide");
 })
 
@@ -356,8 +473,13 @@ $("#listEstButton").on('click',function (){
 });
 
 //Se sube el estudiante
-formEst.submit(function (){
-    guardarEstudiante();
+$("#btnIngresarEst").on('click',function (){
+    if ($("#btnIngresarEst").text() == 'Actualizar'){
+        updateEstudiante();
+    }
+    else {
+        guardarEstudiante();
+    }
 });
 
 //Si se selecciona una fila de la tabla
@@ -368,18 +490,28 @@ $("#tablaEst tbody").on('click','tr',function (){
         $(this).removeClass('selected');
         selectedRow = null;
         botonEliminarEst.disabled = true;
+        $("#btnEditEst").prop('disabled',true);
+        $("#btnHorarioEst").prop('disabled',true);
+        $("#btnVerGrupEst").prop('disabled',true);
+        $("#btnInscript").prop('disabled',true);
+        matricula = null;
     }
     else{
         tableEst.$('tr.selected').removeClass('selected');
         $(this).addClass('selected');
         botonEliminarEst.disabled= false;
+        $("#btnEditEst").prop('disabled',false);
+        $("#btnHorarioEst").prop('disabled',false);
+        $("#btnVerGrupEst").prop('disabled',false);
+        $("#btnInscript").prop('disabled',false);
         selectedRow = tableEst.row(this).data();
+        matricula = selectedRow[0];
         console.log(selectedRow)
     }
 
 });
 
-//Si se preciona eliminar
+//Si se presiona eliminar
 $("#eliminarEst").on('click',function (){
 
     if (selectedRow !==null){
@@ -393,11 +525,46 @@ $("#eliminarEst").on('click',function (){
             eliminarEstudiante(matricula);
             selectedRow = null;
             botonEliminarEst.disabled = true;
-            tableEst.ajax.reload();
+            //tableEst.ajax.reload();
         }
     }
 
 });
+//Editar estudiante
+$("#btnEditEst").on('click',function (){
+    if (selectedRow !==null){
+        $("#matricula").prop('disabled',true);
+        $("#matricula").val(selectedRow[0]);
+        $("#nombre1Estudiante").val(selectedRow[2]);
+        $("#nombre2Estudiante").val(selectedRow[3]);
+        $("#apellido1Estudiante").val(selectedRow[4]);
+        $("#apellido2Estudiante").val(selectedRow[5]);
+        $("#direccion").val(selectedRow[7]);
+        $("#nacionalidad").val(selectedRow[6]);
+        $("#carrera").val(selectedRow[1]);
+        $("#catPago").val(selectedRow[8]);
+        $("#btnIngresarEst").text("Actualizar");
+        formEst.removeClass("hide");
+        $("#tablaEst").parents('div.dataTables_wrapper').first().hide();
+        $("#tablaContainer").addClass("hide");
+
+    }
+});
+
+//ver grupos inscritos
+$("#btnVerGrupEst").on('click',function (){
+    $("#tablaEst").parents('div.dataTables_wrapper').first().hide();
+    $("#tablaContainer").addClass("hide");
+    getGroupInscrip(selectedRow);
+    $("#deleteGrupo").text("Eliminar Inscripcion");
+    $("#tablaContainerGrupo").removeClass("hide");
+    $("#tablaGrupo").parents('div.dataTables_wrapper').first().show();
+});
+/**
+ * Periodo
+ */
+
+
 //Selecciona un periodo
 $("#tablaPeriod tbody").on('click','tr',function (){
 
@@ -406,11 +573,14 @@ $("#tablaPeriod tbody").on('click','tr',function (){
         $(this).removeClass('selected');
         selectedRow = null;
         btnDeletePeriod.disabled = true;
+        $("#btnEditPeriod").prop('disabled',true);
     }
     else{
         tablaPeriodo.$('tr.selected').removeClass('selected');
         $(this).addClass('selected');
         btnDeletePeriod.disabled= false;
+        $("#btnEditPeriod").prop('disabled',false);
+
         selectedRow = tablaPeriodo.row(this).data();
         console.log(selectedRow)
     }
@@ -430,12 +600,69 @@ $("#deletePeriod").on('click',function (){
             eliminarPeriodo(codPeriodo);
             selectedRow = null;
             btnDeletePeriod.disabled = true;
-            tablaPeriodo.ajax.reload();
+            //tablaPeriodo.ajax.reload();
         }
     }
 });
+//editar periodo
+$("#btnEditPeriod").on('click',function (){
+
+    $("#codPeriodAcad").val(selectedRow[0]);
+    $("#codPeriodAcad").prop('disabled',true);
+    $("#descripcion").val(selectedRow[1]);
+    $("#fechaInicio").val(selectedRow[2]);
+    $("#fechaFin").val(selectedRow[3]);
+    $("#fechaInicioClases").val(selectedRow[4]);
+    $("#fechaLimitePago").val(selectedRow[6]);
+    $("#fechaLimitePrematricula").val(selectedRow[7]);
+    $("#fechaLimiteRetiro").val(selectedRow[8]);
+    $("#fechaLimitePublicacion").val(selectedRow[9]);
+    $("#fechaFinClases").val(selectedRow[5]);
+    $("#savePeriod").text("Actualizar");
 
 
+    clearPanel();
+
+    formPeriodo.removeClass("hide");
+
+
+
+});
+/**
+ * Inscripciones
+ */
+var formInscript = $("#inscriptForm");
+$("#btnInscript").on('click',function (){
+    $("#matriculaInscrip").val(selectedRow[0]);
+    console.log(selectedRow);
+    clearPanel();
+    formInscript.removeClass("hide");
+    $("#tablaContainerGrupo").removeClass("hide");
+    $("#tablaGrupo").parents('div.dataTables_wrapper').first().show();
+    getGrupos();
+    $("#buttonContainer").addClass("hide");
+});
+
+//Realizar inscripcion
+$("#saveInscript").on('click',function (){
+   if ($("#codPeriodInscrip").val() != '' && $("#codGrupInscript").val() != '' &&
+   $("#codAsigInscript").val() != ''){
+       var confirm = window.confirm("Seguro que desea inscribir?");
+       if (confirm){
+           inscribirEst();
+       }
+   }
+   else {
+       alert("No pueden haber campos vacios.");
+   }
+});
+//cancelar inscripcion
+$("#cancelInscript").on('click',function (){
+   clearPanel();
+    //Abrir tabla
+    $("#tablaContainer").removeClass("hide");
+    $("#tablaEst").parents('div.dataTables_wrapper').first().show();
+});
 //Regresa a la principal
 $("#home").on('click',function (){
     clearPanel();
@@ -456,31 +683,62 @@ function clearPanel(){
     btnDeletePeriod.disabled = true;
     botonEliminarEst.disabled = true;
     deleteGrup.disabled = true;
+    $("#deleteGrupo").text("Eliminar");
+    $("#btnEditEst").prop('disabled',true);
+    $("#btnHorarioEst").prop('disabled',true);
+    $("#btnVerGrupEst").prop('disabled',true);
+    $("#btnInscript").prop('disabled',true);
     $("#modalGrup").prop('disabled',true);
-    $("#saveHorario").text("Guardar Horario")
+    $("#saveHorario").text("Guardar Horario");
+    $("#btnIngresarEst").text("Guardar");
+    $("#matricula").prop('disabled',false);
+    btnEditAsig.prop('disabled',true);
+    $("#saveAsig").text("Guardar");
+    $("#buttonContainer").removeClass("hide");
+
+    var tbody = $('#horarioClases tbody');
+
+    tbody.empty();
     selectedRow = null;
+    matricula = null;
+    //formEst[0].reset();
+    //formGrup[0].reset();
+    //formHorario[0].reset();
+    //formAsig[0].reset();
+    //formPeriodo[0].reset();
+    //formSaveHorario[0].reset();
+    //buscarHorario[0].reset();
     if (!$("#tablaContainer").hasClass("hide")){
         $("#tablaContainer").addClass("hide");
     }
     if (!formEst.hasClass("hide")){
         formEst.addClass("hide");
+        formEst[0].reset();
     }
     if (!formPeriodo.hasClass("hide")){
         formPeriodo.addClass("hide");
+        formPeriodo[0].reset()
+        $("#codPeriodAcad").prop('disabled',false);
+        $("#savePeriod").text("Guardar");
     }
     if (!formAsig.hasClass("hide")){
         formAsig.addClass("hide");
+        formAsig[0].reset();
+        $("#codAsig").prop('disabled',false);
     }
     if (!formGrup.hasClass("hide")){
         formGrup.addClass("hide");
+        formGrup[0].reset();
         if (!formHorario.hasClass("hide")){
             formHorario.addClass("hide");
+            formHorario[0].reset();
             $("#continue").text("Siguiente");
         }
 
     }
     if (!formSaveHorario.hasClass("hide")){
         formSaveHorario.addClass("hide");
+        formSaveHorario[0].reset();
     }
     if (!$("#tablaContainerPeriod").hasClass("hide")){
         $("#tablaContainerPeriod").addClass("hide");
@@ -493,7 +751,17 @@ function clearPanel(){
     }
     if (!$("#tablaContainerHorario").hasClass("hide")){
         $("#tablaContainerHorario").addClass("hide");
+
     }
+    if (!formInscript.hasClass("hide")){
+        formInscript.addClass("hide");
+        formInscript[0].reset();
+    }
+    if(!$("#horarioContainer").hasClass("hide")){
+        $("#horarioContainer").addClass("hide");
+        buscarHorario[0].reset();
+    }
+
 }
 
 // Función para llenar la tabla con los datos de los estudiantes
@@ -511,6 +779,7 @@ function getStudents() {
             data.forEach(function(student) {
                 tableEst.row.add([
                     student.matricula,
+                    student.carrera,
                     student.primerNom,
                     student.segNom,
                     student.primerApe,
@@ -524,7 +793,7 @@ function getStudents() {
 
         },
         error: function(xhr, status, error) {
-            console.error('Error al obtener los estudiantes: ' + error);
+            alert('Error al obtener los estudiantes: ' + error);
         }
     });
 }
@@ -562,14 +831,15 @@ function guardarEstudiante() {
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(estudiante),
-        success: function() {
+        success: function(response) {
             // Éxito: el estudiante se ha guardado correctamente
-            alert("Estudiante guardado correctamente");
+            alert(response);
             formEst[0].reset();
+
             // Puedes realizar alguna otra acción después de guardar el estudiante, si es necesario.
         },
         error: function(xhr, status, error) {
-            console.error("Error al guardar el estudiante: " + error);
+            alert(xhr.responseText);
         }
     });
 }
@@ -578,16 +848,64 @@ function eliminarEstudiante(matricula){
     $.ajax({
         url: 'student/deleteStudent?matricula='+matricula,
         type: 'DELETE',
-        success: function (){
-            alert("Estudiante eliminado exitosamente")
+        success: function (response){
+            alert(response);
             getStudents();
         } ,
-        error: function (){
-            alert("Error, no se pudo eliminar el estudiante.")
+        error: function (xhr,status,error){
+            alert(xhr.responseText);
         }
     });
 }
+//Update estudiante
 
+function updateEstudiante(){
+    // Obtener los valores del formulario
+    var matricula = $("#matricula").val();
+    var PrimerNom = $("#nombre1Estudiante").val();
+    var SegNom = $("#nombre2Estudiante").val();
+    var PrimerApe = $("#apellido1Estudiante").val();
+    var SegApe = $("#apellido2Estudiante").val();
+    var direccion = $("#direccion").val();
+    var nacionalidad = $("#nacionalidad").val();
+    var carrera = $("#carrera").val();
+    var catPago = $("#catPago").val();
+    // Objeto con los datos del estudiante
+    var estudiante = {
+        matricula: matricula,
+        primerNom: PrimerNom,
+        segNom: SegNom,
+        primerApe: PrimerApe,
+        segApe: SegApe,
+        direccion: direccion,
+        nacionalidad: nacionalidad,
+        carrera: carrera,
+        catPago: catPago
+    };
+
+    // Enviar los datos al controlador mediante AJAX
+    $.ajax({
+        url: "/student/updateStudent", // Ruta del controlador para guardar el estudiante
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(estudiante),
+        success: function(response) {
+            // Éxito: el estudiante se ha guardado correctamente
+            alert(response);
+            formEst[0].reset();
+            $("#matricula").prop('disabled',false);
+            formEst.addClass("hide");
+            getStudents();
+            $("#tablaEst").parents('div.dataTables_wrapper').first().show();
+            $("#tablaContainer").removeClass("hide");
+
+            // Puedes realizar alguna otra acción después de guardar el estudiante, si es necesario.
+        },
+        error: function(xhr, status, error) {
+            alert(xhr.responseText);
+        }
+    });
+}
 /**
  * Funciones para periodos
  */
@@ -615,8 +933,8 @@ function getPeriods(){
                ]).draw();
            });
        },
-        error: function (error){
-           console.log("Algo salio mal: "+error);
+        error: function (xhr,status,error){
+           alert(xhr.responseText);
         }
     });
 }
@@ -656,13 +974,13 @@ function savePeriod(){
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(periodo),
-        success: function() {
+        success: function(response) {
             // Éxito: el estudiante se ha guardado correctamente
-            alert("Periodo guardado correctamente");
+            alert(response);
             formPeriodo[0].reset();
         },
         error: function(xhr, status, error) {
-            console.error("Error al guardar el Periodo: " + error);
+            alert(xhr.responseText);
         }
     });
 }
@@ -672,12 +990,12 @@ function eliminarPeriodo(codPeriod){
     $.ajax({
         url: 'periodo/deletePeriod?codPeriodoAcad='+codPeriod,
         type: 'DELETE',
-        success: function (){
-            alert("Periodo eliminado exitosamente")
+        success: function (response){
+            alert(response)
             getPeriods();
         } ,
-        error: function (){
-            alert("Error, no se pudo eliminar el periodo.")
+        error: function (xhr,status,error){
+            alert(xhr.responseText)
         }
     });
 }
@@ -706,7 +1024,7 @@ function getAsig(){
             });
         },
         error: function (error){
-            console.log("Algo salio mal: "+error);
+            console.log("No se encontro asignatura: "+error);
         }
     });
 }
@@ -735,13 +1053,13 @@ function saveAsig(){
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(asignatura),
-        success: function() {
+        success: function(res) {
             // Éxito: el estudiante se ha guardado correctamente
-            alert("Asignatura guardada correctamente");
+            alert(res);
             formAsig[0].reset();
         },
         error: function(xhr, status, error) {
-            console.error("Error al guardar la Asignatura: " + error);
+            alert(xhr.responseText);
         }
     });
 }
@@ -751,12 +1069,12 @@ function deleteAsig(codAsig){
     $.ajax({
         url: 'asignatura/deleteAsig?codAsignatura='+codAsig,
         type: 'DELETE',
-        success: function (){
-            alert("Asignatura eliminada exitosamente")
+        success: function (res){
+            alert(res)
             getAsig();
         } ,
-        error: function (){
-            alert("Error, no se pudo eliminar la Asignatura.")
+        error: function (xhr,status,error){
+            alert(xhr.responseText)
         }
     });
 }
@@ -768,12 +1086,13 @@ function deleteAsig(codAsig){
 
 //Obtener Grupos
 function getGrupos(){
+    tablaGrup.clear().draw();
     $.ajax({
         url:'group/groupList',
         type:'GET',
         success: function (data){
             // Limpiar la tabla antes de agregar nuevos datos
-            tablaGrup.clear();
+
             // Agregar cada estudiante a la tabla
             data.forEach(function(grupo) {
                 tablaGrup.row.add([
@@ -788,7 +1107,7 @@ function getGrupos(){
             });
         },
         error: function (error){
-            console.log("Algo salio mal: "+error);
+            alert("No se encontro grupos.");
         }
     });
 }
@@ -796,19 +1115,18 @@ function getGrupos(){
 //Obtener horario de grupo dado el mismo
 
 function getHorario(codPeriod,codAsig,numGrup){
+    tablaHorario.clear().draw();
     // Obtener los valores del formulario
     var codPeriodGrup = codPeriod;
     var codAsig = codAsig;
     var numGrup = numGrup;
-
+    console.log(codPeriodGrup,codAsig,numGrup);
     $.ajax({
         url:'group/groupSchedule?codPeriodoAcad='+codPeriodGrup+'&codAsignatura='+codAsig+'&numGrupo='+numGrup,
         type:'GET',
         success: function (data){
             // Limpiar la tabla antes de agregar nuevos datos
-            tablaHorario.clear();
-            // Agregar cada estudiante a la tabla
-            console.log(data);
+
             data.forEach(function(horario) {
                     console.log(horario.dia);
                     tablaHorario.row.add([
@@ -827,7 +1145,7 @@ function getHorario(codPeriod,codAsig,numGrup){
             });
         },
         error: function (error){
-            console.log("Algo salio mal: "+error);
+            alert("No se esncontro horario.");
         }
     });
 }
@@ -856,9 +1174,9 @@ function saveGrup(){
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(grupo),
-        success: function() {
+        success: function(response) {
             // Éxito: el grupo se ha guardado correctamente
-            alert("Grupo guardado correctamente");
+            alert(response);
             if (!$("#formHorario").hasClass("hide")){
                 saveHorario();
                 console.log("Guardando horario")
@@ -868,7 +1186,7 @@ function saveGrup(){
             }
         },
         error: function(xhr, status, error) {
-            console.error("Error al guardar la Asignatura: " + error);
+            alert(xhr.responseText);
         }
     });
 }
@@ -902,9 +1220,9 @@ function saveHorario(){
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(grupo),
-        success: function() {
+        success: function(response) {
             // Éxito: el estudiante se ha guardado correctamente
-            alert("Horario guardado correctamente");
+            alert(response);
             formGrup[0].reset();
             getHorario(codPeriodGrup,codAsig,numGrup)
 
@@ -913,7 +1231,7 @@ function saveHorario(){
 
         },
         error: function(xhr, status, error) {
-            console.error("Error al guardar el horario: " + error);
+            alert(xhr.responseText);
         }
     });
 }
@@ -923,12 +1241,12 @@ function eliminarGrup(codPeriodo,codAsig,numGrupo){
     $.ajax({
         url: 'group/deleteGroup?NumGrupo='+numGrupo+'&CodPeriodoAcad='+codPeriodo+'&CodAsignatura='+codAsig,
         type: 'DELETE',
-        success: function (){
-            alert("Grupo eliminado exitosamente")
+        success: function (res){
+            alert(res)
             getGrupos();
         } ,
-        error: function (){
-            alert("Error, no se pudo eliminar el grupo.")
+        error: function (xhr,status,error){
+            alert(xhr.responseText)
         }
     });
 }
@@ -938,13 +1256,13 @@ function eliminarHorario(codPeriod,codAsig,numGrupo){
     $.ajax({
         url: 'group/deleteSchedule?NumGrupo='+numGrupo+'&CodPeriodoAcad='+codPeriod+'&CodAsignatura='+codAsig,
         type: 'DELETE',
-        success: function (){
-            alert("Horario eliminado exitosamente");
-            location.reload();
+        success: function (response){
+            alert(response);
+            getHorario(codPeriod,codAsig,numGrupo);
 
         } ,
-        error: function (){
-            alert("Error, no se pudo eliminar el Horario.")
+        error: function (xhr,status,error){
+            alert(xhr.responseText);
         }
     });
 }
@@ -972,9 +1290,9 @@ function updateGrupo(){
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(grupo),
-        success: function() {
+        success: function(res) {
             // Éxito: el grupo se ha guardado correctamente
-            alert("Grupo guardado correctamente");
+            alert(res);
 
             formGrup[0].reset();
             $("#continue").removeClass("hide");
@@ -992,7 +1310,7 @@ function updateGrupo(){
 
         },
         error: function(xhr, status, error) {
-            console.error("Error al guardar el Grupo: " + error);
+            alert(xhr.responseText);
         }
     });
 }
@@ -1026,9 +1344,9 @@ function saveHorarioOnly(){
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(grupo),
-        success: function() {
+        success: function(res) {
             // Éxito: el estudiante se ha guardado correctamente
-            alert("Horario añadido correctamente");
+            alert(res);
             formSaveHorario[0].reset();
 
             formSaveHorario.addClass("hide");
@@ -1039,7 +1357,7 @@ function saveHorarioOnly(){
             $("#tablaGrupo").parents('div.dataTables_wrapper').first().show();
         },
         error: function(xhr, status, error) {
-            console.error("Error al añadir el horario: " + error);
+            alert(xhr.responseText);
         }
     });
 }
@@ -1073,9 +1391,9 @@ function updateHorario(){
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(grupo),
-        success: function() {
+        success: function(res) {
             // Éxito: el grupo se ha guardado correctamente
-            alert("Grupo guardado correctamente");
+            alert(res);
 
             formSaveHorario[0].reset();
             getHorario(codPeriodGrup,codAsig,numGrup)
@@ -1086,7 +1404,210 @@ function updateHorario(){
 
         },
         error: function(xhr, status, error) {
-            console.error("Error al guardar el Grupo: " + error);
+            alert(xhr.responseText);
+        }
+    });
+}
+
+function inscribirEst(){
+    // Obtener los valores del formulario
+    var codPeriod = $("#codPeriodInscrip").val();
+    var codAsig = $("#codAsigInscript").val();
+    var numGrup = $("#codGrupInscript").val();
+    var matricula = $("#matriculaInscrip").val();
+
+    // Enviar los datos al controlador mediante AJAX
+    $.ajax({
+        url: "student/inscribSt?codPeriod="+codPeriod+"&codAsig="+codAsig+"&matricula="+matricula+"&numGrup="+numGrup, // Ruta del controlador para guardar el estudiante
+        type: "POST",
+        success: function(rep) {
+            // Éxito: el grupo se ha guardado correctamente
+            alert(rep);
+
+            formInscript[0].reset();
+            clearPanel();
+
+            //TODO
+            $("#buttonContainer").removeClass("hide");
+            $("#tablaEst").parents('div.dataTables_wrapper').first().show();
+            $("#tablaContainer").removeClass("hide");
+
+        },
+        error: function(xhr, status, error) {
+            alert(xhr.responseText);
+        }
+    });
+}
+
+//Obtener inscripciones
+function getGroupInscrip(selected){
+    var matricula = selected[0];
+    tablaGrup.clear().draw();
+    console.log(matricula)
+    $.ajax({
+        url: "student/listGrup?matricula="+matricula,
+        type: "GET",
+        success: function (data){
+
+            data.forEach(function(grupo) {
+
+                tablaGrup.row.add([
+                    grupo.codPeriodoAcad,
+                    grupo.codAsignatura,
+                    grupo.numGrupo,
+                    grupo.cupoGrupo,
+                    grupo.horario
+                ]).draw();
+            });
+        },
+        error: function (xhr,status,error) {
+            alert("No hay grupos inscritos. "+error);
+        }
+    })
+}
+function findSchedule(periodo,matricula){
+
+    console.log(matricula)
+    $.ajax({
+        url: "/student/classSchedule?periodo="+periodo+"&matricula="+matricula,
+        type: "GET",
+        success: function (data){
+
+            var tbody = $('#horarioClases tbody');
+
+            // Limpiamos el contenido de la tabla antes de agregar los nuevos datos
+            tbody.empty();
+
+            // Recorremos los datos y creamos las filas y celdas correspondientes
+            $.each(data, function (index, objeto) {
+                var fila = $('<tr>');
+                fila.append('<td>' + objeto.horaClase + '</td>');
+                fila.append('<td>' + objeto.lunes + '</td>');
+                fila.append('<td>' + objeto.martes + '</td>');
+                fila.append('<td>' + objeto.miercoles + '</td>');
+                fila.append('<td>' + objeto.jueves + '</td>');
+                fila.append('<td>' + objeto.viernes + '</td>');
+                fila.append('<td>' + objeto.sabado + '</td>');
+
+                tbody.append(fila);
+            });
+        },
+        error: function (xhr,status,error) {
+            alert("No se encontraron clases");
+        }
+    })
+}
+
+//Actualizar asignatura
+
+function updateAsig(){
+    var codAsig = $("#codAsig").val();
+    var nombre = $("#nombreAsig").val();
+    var creditos = $("#creditos").val();
+    var hTeo = $("#horasTeoricas").val();
+    var hPrac= $("#horasPracticas").val();
+
+    // Objeto con los datos del grupo
+    var asignatura = {
+
+        codAsignatura: codAsig,
+        nombre: nombre,
+        creditos: creditos,
+        horasTeoricas: hTeo,
+        horasPracticas: hPrac
+    };
+
+    // Enviar los datos al controlador mediante AJAX
+    $.ajax({
+        url: "asignatura/updateAsig", // Ruta del controlador para guardar el estudiante
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(asignatura),
+        success: function(res) {
+            // Éxito: el grupo se ha guardado correctamente
+            alert(res);
+
+            formAsig[0].reset();
+            getAsig()
+            clearPanel();
+
+            $("#tablaAsig").parents('div.dataTables_wrapper').first().show();
+            $("#tablaContainerAsig").removeClass("hide");
+
+        },
+        error: function(xhr, status, error) {
+            alert(xhr.responseText);
+        }
+    });
+}
+
+function updatePeriodo(){
+    // Obtener los valores del formulario
+    var codPeriodo = $("#codPeriodAcad").val();
+    var descripcion = $("#descripcion").val();
+    var fechaIn = $("#fechaInicio").val();
+    var fechaFin = $("#fechaFin").val();
+    var fechaInClas= $("#fechaInicioClases").val();
+    var fechaFinClas = $("#fechaFinClases").val();
+    var fechaLimP = $("#fechaLimitePago").val();
+    var fechaLimPre = $("#fechaLimitePrematricula").val();
+    var fechaLimRe = $("#fechaLimiteRetiro").val();
+    var fechaLimPu = $("#fechaLimitePublicacion").val();
+
+    console.log(codPeriodo);
+    // Objeto con los datos del estudiante
+    var periodo = {
+        codPeriodoAcad: codPeriodo,
+        descripcion: descripcion,
+        fechaInicio: fechaIn,
+        fechaFin: fechaFin,
+        fechaInicioClases: fechaInClas,
+        fechaFinClases: fechaFinClas,
+        fechaLimitePago: fechaLimP,
+        fechaLimitePrematricula: fechaLimPre,
+        fechaLimiteRetiro: fechaLimRe,
+        fechaLimitePublicacion: fechaLimPu
+    };
+
+    // Enviar los datos al controlador mediante AJAX
+    $.ajax({
+        url: "/periodo/updatePeriodo", // Ruta del controlador para guardar el estudiante
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(periodo),
+        success: function(response) {
+            // Éxito: el estudiante se ha guardado correctamente
+            alert(response);
+            formPeriodo[0].reset();
+            clearPanel()
+            getPeriods();
+            $("#tablaContainerPeriod").removeClass("hide");
+            $("#tablaPeriod").parents('div.dataTables_wrapper').first().show();
+        },
+        error: function(xhr, status, error) {
+            alert(xhr.responseText);
+        }
+    });
+}
+
+function deleteInscrip(codPeriod,codAsig,numGrup,matricula){
+
+
+    // Enviar los datos al controlador mediante AJAX
+    $.ajax({
+        url: "student/deleteInscrip?codPeriod="+codPeriod+"&codAsig="+codAsig+"&matricula="+matricula+"&numGrup="+numGrup, // Ruta del controlador para guardar el estudiante
+        type: 'DELETE',
+        success: function(rep) {
+            // Éxito: el grupo se ha guardado correctamente
+            alert(rep);
+            clearPanel();
+
+            $("#tablaEst").parents('div.dataTables_wrapper').first().show();
+            $("#tablaContainer").removeClass("hide");
+
+        },
+        error: function(xhr, status, error) {
+            alert(xhr.responseText);
         }
     });
 }

@@ -69,6 +69,8 @@
                         <a id="inEstudiante" class="dropdown-item" href="#" type="button">Ingresar Estudiante</a>
                         <a class="dropdown-item" href="#" type="button" id="listEstButton">Lista de Estudiantes</a>
                         <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" type="button" id="showHorario">Horario de clases</a>
+
                     </div>
                 </li>
             </ul>
@@ -123,7 +125,7 @@
 
         </div>
 
-        <button type="submit" class="btn btn-outline-success">Guardar</button>
+        <button id="btnIngresarEst" type="button" class="btn btn-outline-success">Guardar</button>
     </form>
 
 <!--  Tabla de estudiantes  -->
@@ -133,6 +135,7 @@
             <thead>
             <tr>
                 <th scope="col">Matricula</th>
+                <th scope="col">Carrera</th>
                 <th scope="col">Primer Nombre</th>
                 <th scope="col">Segundo Nombre</th>
                 <th scope="col">Primer Apellido</th>
@@ -152,12 +155,54 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
             </tr>
 
             </tbody>
         </table>
         <button id="eliminarEst" class="btn btn-outline-danger" disabled>Eliminar</button>
+        <button id="btnEditEst" class="btn btn-outline-primary" disabled>Editar</button>
+        <button id="btnInscript" class="btn btn-outline-secondary" disabled>Inscribir a un grupo</button>
+        <button id="btnVerGrupEst" class="btn btn-outline-secondary" disabled>Ver Grupos Inscritos</button>
+        <button id="btnHorarioEst" class="btn btn-outline-success" disabled>Ver Horario</button>
     </div>
+
+
+<!--Inscribir estudiante-->
+
+<form id="inscriptForm" class="form hide">
+    <div class="form-row">
+        <div class="form-group col-md-3">
+            <label for="codPeriodInscrip">Codigo del periodo:</label>
+            <input type="text" class="form-control" rows="5" id="codPeriodInscrip" required>
+        </div>
+        <div class="form-group col-md-3">
+            <label for="matriculaInscrip">Matricula:</label>
+            <input type="text" class="form-control" rows="5" id="matriculaInscrip" disabled required>
+        </div>
+    </div>
+
+    <div class="form-row">
+
+        <div class="form-group col-md-3">
+            <label for="codAsigInscript">Codigo de asignatura:</label>
+            <input type="text" class="form-control" rows="5" id="codAsigInscript" required>
+        </div>
+        <div class="form-group col-md-3">
+            <label for="codGrupInscript">Codigo de Grupo:</label>
+            <input type="text" class="form-control" rows="5" id="codGrupInscript" required>
+
+        </div>
+
+    </div>
+
+    <div class="col-auto">
+        <button id="cancelInscript" type="button" class="btn btn-outline-secondary mb-2">Cancelar</button>
+
+        <button id="saveInscript" type="button" class="btn btn-outline-success mb-2">Inscribir</button>
+
+    </div>
+</form>
 
     <!--    Periodos-->
     <!--  Estudiante  -->
@@ -189,7 +234,7 @@
                 <input type="date" class="form-control" id="fechaInicioClases">
             </div>
             <div class="form-group col-md-4">
-                <label for="fechaFinClases">Fecha de Fin del Periodo:</label>
+                <label for="fechaFinClases">Fecha de Fin de Clases:</label>
                 <input type="date" class="form-control" id="fechaFinClases">
             </div>
             <div class="form-group col-md-4">
@@ -211,7 +256,7 @@
 
         </div>
 
-        <button id="savePeriod" type="submit" class="btn btn-outline-success">Guardar</button>
+        <button id="savePeriod" type="button" class="btn btn-outline-success">Guardar</button>
     </form>
 
 <!--  Tabla de periodos  -->
@@ -249,6 +294,8 @@
             </tbody>
         </table>
         <button id="deletePeriod" class="btn btn-outline-danger" disabled>Eliminar</button>
+        <button id="btnEditPeriod" class="btn btn-outline-primary" disabled>Editar</button>
+
     </div>
 
     <!--    ASsignaturas  -->
@@ -282,7 +329,7 @@
 
         </div>
 
-        <button id="saveAsig" type="submit" class="btn btn-outline-success">Guardar</button>
+        <button id="saveAsig" type="button" class="btn btn-outline-success">Guardar</button>
     </form>
 
     <!--  Tabla de asignaturas  -->
@@ -310,6 +357,8 @@
             </tbody>
         </table>
         <button id="deleteAsig" class="btn btn-outline-danger" disabled>Eliminar</button>
+        <button id="btnEditAsig" class="btn btn-outline-primary" disabled>Editar</button>
+
     </div>
 
 
@@ -400,17 +449,20 @@
 
             </tbody>
         </table>
-        <button id="deleteGrupo" class="btn btn-outline-danger" disabled>Eliminar</button>
-        <!-- Button trigger modal -->
-        <button id="modalGrup" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHorario" disabled>
-            Ver Horario
-        </button>
-        <button id="btnAddHorario" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHorario" disabled>
-            Añadir Horario
-        </button>
-        <button id="btneditGrupo" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHorario" disabled>
-            Editar
-        </button>
+        <div id="buttonContainer" class="col-auto">
+            <button id="deleteGrupo" class="btn btn-outline-danger" disabled>Eliminar</button>
+            <!-- Button trigger modal -->
+            <button id="modalGrup" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHorario" disabled>
+                Ver Horario
+            </button>
+            <button id="btnAddHorario" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHorario" disabled>
+                Añadir Horario
+            </button>
+            <button id="btneditGrupo" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHorario" disabled>
+                Editar
+            </button>
+        </div>
+
 
     </div>
 
@@ -499,8 +551,47 @@
 
     </form>
 
+<!--Horario de clases-->
+    <div id="horarioContainer" class="hide">
+        <h3 class="text-left">Horario por Periodo:</h3>
+        <hr>
+        <form id="horarioForm" class="form">
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="periodoHorario">Escriba el codigo de el periodo:</label>
+                    <input type="text" class="form-control" id="periodoHorario" placeholder="EJ: '2022-2023/3'" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="matriculaHorario">Escriba la Matricula del estudiante:</label>
+                    <input type="text" class="form-control" id="matriculaHorario" required>
+                </div>
+                <div class="form-group mt-3 p-3">
+                    <button type="button" id="buscarHorario" class="btn btn-outline-primary">Buscar Horario</button>
+                </div>
+            </div>
+        </form>
+        <hr>
+        <h3 class="text-center">Horario de Clases</h3>
+        <table id="horarioClases" class="w-auto p-3 table table-hover table-bordered">
+            <thead>
+            <tr>
+                <th scope="col">Hora/Dia</th>
+                <th scope="col">Lunes</th>
+                <th scope="col">Martes</th>
+                <th scope="col">Miercoles</th>
+                <th scope="col">Jueves</th>
+                <th scope="col">Viernes</th>
+                <th scope="col">Sabado</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
 
+            </tr>
 
+            </tbody>
+        </table>
+    </div>
 
 
 
